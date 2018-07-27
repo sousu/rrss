@@ -14,7 +14,6 @@ RubyではてブRSS再配信して棚卸し
 
 RSSの登録
 
+    http://path/to/sinatra/all/365  1年前の全てのはてブ
+    http://path/to/sinatra/@de/3    3日目のタグ[@de]のはてブ
     
-
-
-
