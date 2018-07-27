@@ -1,5 +1,5 @@
 
-## RRSS
+## rrss
 
 RubyではてブRSS再配信して棚卸し
 
