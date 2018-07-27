@@ -76,7 +76,7 @@ end
 
 def empty(m)
   m.items.new_item do |item|
-    item.link = "http://sousu.jp/"
+    item.link = "http://b.hatena.ne.jp/"
     item.title = "No entry"
     item.description = "No entry"
   end
