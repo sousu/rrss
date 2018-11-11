@@ -25,7 +25,11 @@ get '/rss/' do
 end
 
 get '/rss/:tag/:date' do |tag,date|
-  d = Date.today - date.to_i
+  if date == "shuffle"
+    d = Date.today - (rand(3600)+1)
+  else
+    d = Date.today - date.to_i
+  end
   url = "http://b.hatena.ne.jp/#{user}/rss?date=#{d.strftime("%Y%m%d")}"
 
   open(url,opt) do |http|
@@ -45,7 +49,7 @@ get '/rss/:tag/:date' do |tag,date|
       end.to_s
     end
 
-    if tag != "all"
+    if tag != "all" #all以外の場合はTagで絞り込み
       exist = false
       return RSS::Maker.make("1.0") do |m|
         m.channel.title = txt
