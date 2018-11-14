@@ -49,7 +49,8 @@ get '/rss/:tag/:date' do |tag,date|
       end.to_s
     end
 
-    if tag != "all" #all以外の場合はTagで絞り込み
+    #all以外の場合はTagで絞り込み
+    if tag != "all" 
       exist = false
       return RSS::Maker.make("1.0") do |m|
         m.channel.title = txt
@@ -57,7 +58,7 @@ get '/rss/:tag/:date' do |tag,date|
         m.channel.about = rss.channel.about
         m.channel.link = rss.channel.link
         rss.items.each do |i|
-          if /user-tag.+#{tag}/ =~ i.content_encoded 
+          if tag == i.dc_subject 
             exist = true
             m.items.new_item do |item|
               item.link = i.link
@@ -65,6 +66,7 @@ get '/rss/:tag/:date' do |tag,date|
               item.description = i.description
               item.date = i.date
               item.content_encoded = i.content_encoded
+              item.dc_subject = i.dc_subject
             end
           end
         end
