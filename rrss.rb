@@ -24,6 +24,14 @@ get '/rss/' do
   "active"
 end
 
+not_found do
+    "not found"
+end
+
+error do
+    "sorry"
+end
+
 get '/rss/:tag/:date' do |tag,date|
   if date == "shuffle"
     d = Date.today - (rand(3600)+1)
