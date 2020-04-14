@@ -9,10 +9,11 @@ require 'open-uri'
 require 'rss'
 require 'rexml/document'
 
-if ARGV[0]
+if ARGV.size >= 2
   user = ARGV[0]
+  sd = ARGV[1]
 else
-  puts "set user"
+  puts "usage: rrss.rb [user_id] [start_date Ex:2006-07-26]"
   exit
 end
 
@@ -25,66 +26,78 @@ get '/rss/' do
 end
 
 not_found do
-    "not found"
+  "not found"
 end
 
 error do
-    "sorry"
+  "sorry"
+end
+
+get '/rss/shuffle' do 
+  while true
+    d = Date.today - (rand((Date.today-Date.parse(sd)).to_i)+1)
+    url = "http://b.hatena.ne.jp/#{user}/rss?date=#{d.strftime("%Y%m%d")}"
+    puts url
+    sleep(0.1)
+
+    open(url,opt) do |http|
+      doc = http.read
+      xml = REXML::Document.new(doc)
+      next if REXML::XPath.match(xml,'//item').empty? #中身無ければ読込直し
+
+      rss = RSS::Parser.parse(doc,false)
+      rss = RSS::Maker.make("2.0") do |m|
+        m.channel.title = "はてブ棚卸 shuffle"
+        m.channel.description = "はてブ棚卸 shuffle"
+        m.channel.link = "http://b.hatena.ne.jp/#{user}"
+        rss.items.each do |i|
+          m.items.new_item do |item|
+            item.link = i.link
+            item.title = i.title
+            item.description = i.description
+            item.date = Time.now
+            item.content_encoded = i.content_encoded
+            item.dc_subject = i.dc_subject
+          end
+        end
+      end
+      return rss.to_s
+    end
+  end
 end
 
 get '/rss/:tag/:date' do |tag,date|
-  if date == "shuffle"
-    d = Date.today - (rand(3600)+1)
-  else
-    d = Date.today - date.to_i
-  end
+  d = Date.today - date.to_i
   url = "http://b.hatena.ne.jp/#{user}/rss?date=#{d.strftime("%Y%m%d")}"
+  txt = "はてブ棚卸 #{date}日前"
+  txt += " タグ:#{tag}" unless tag == "all"
 
   open(url,opt) do |http|
     doc = http.read
-    txt = "はてブ棚卸 #{date}日前"
-    txt += " タグ:#{tag}" if not tag == "all"
-    rss = RSS::Parser.parse(doc,false)
-
     xml = REXML::Document.new(doc)
-    if REXML::XPath.match(xml,'//item').empty?
-      return RSS::Maker.make("1.0") do |m|
-        m.channel.title = txt
-        m.channel.description = txt
-        m.channel.about = rss.channel.about
-        m.channel.link = rss.channel.link
-        empty(m)
-      end.to_s
-    end
-
-    #all以外の場合はTagで絞り込み
-    if tag != "all" 
-      exist = false
-      return RSS::Maker.make("1.0") do |m|
-        m.channel.title = txt
-        m.channel.description = txt
-        m.channel.about = rss.channel.about
-        m.channel.link = rss.channel.link
-        rss.items.each do |i|
-          if tag == i.dc_subject 
-            exist = true
-            m.items.new_item do |item|
-              item.link = i.link
-              item.title = i.title
-              item.description = i.description
-              item.date = i.date
-              item.content_encoded = i.content_encoded
-              item.dc_subject = i.dc_subject
-            end
+    rss = RSS::Parser.parse(doc,false)
+    exist = false
+    rss = RSS::Maker.make("1.0") do |m|
+      m.channel.title = txt
+      m.channel.description = txt
+      m.channel.about = rss.channel.about
+      m.channel.link = rss.channel.link
+      rss.items.each do |i|
+        if tag == "all" or tag == i.dc_subject 
+          exist = true
+          m.items.new_item do |item|
+            item.link = i.link
+            item.title = i.title
+            item.description = i.description
+            item.date = i.date
+            item.content_encoded = i.content_encoded
+            item.dc_subject = i.dc_subject
           end
         end
-        empty(m) unless exist
-      end.to_s
+      end
+      empty(m) unless exist #タグで絞ると項目が無くなる場合
     end
-
-    rss.channel.title = txt
-    rss.channel.description = txt
-    rss.to_s
+    return rss.to_s
   end
 end
 

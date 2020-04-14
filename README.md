@@ -10,10 +10,11 @@ RubyではてブRSS再配信して棚卸し
 
 起動
 
-    ruby rrss.rb [user-id]
+    rrss.rb [user_id] [start_date Ex:2006-07-26]
 
 RSSの登録
 
     http://path/to/sinatra/rss/all/365  1年前の全てのはてブ
     http://path/to/sinatra/rss/@de/3    3日目のタグ[@de]のはてブ
+    http://path/to/sinatra/shuffle      ランダム取得
     
