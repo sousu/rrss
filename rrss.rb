@@ -11,7 +11,7 @@ require 'rexml/document'
 
 if ARGV.size >= 2
   user = ARGV[0]
-  sd = ARGV[1]
+  start = ARGV[1]
 else
   puts "usage: rrss.rb [user_id] [start_date Ex:2006-07-26]"
   exit
@@ -35,11 +35,12 @@ end
 
 get '/rss/shuffle' do 
   while true
-    d = Date.today - (rand((Date.today-Date.parse(sd)).to_i)+1)
-    url = "http://b.hatena.ne.jp/#{user}/rss?date=#{d.strftime("%Y%m%d")}"
+    sleep(0.2)
+    ago = (Date.today-Date.parse(start)).to_i - rand(3600) #古い物を少なく
+    day = Date.today - (rand(ago)+1)
+    url = "http://b.hatena.ne.jp/#{user}/rss?date=#{day.strftime("%Y%m%d")}"
     puts url
-    sleep(0.1)
-
+    
     open(url,opt) do |http|
       doc = http.read
       xml = REXML::Document.new(doc)
@@ -56,7 +57,8 @@ get '/rss/shuffle' do
             item.title = i.title
             item.description = i.description
             item.date = Time.now
-            item.content_encoded = i.content_encoded
+            item.content_encoded = i.date.to_s+" "+i.content_encoded
+            puts item.content_encoded
             item.dc_subject = i.dc_subject
           end
         end
@@ -67,8 +69,8 @@ get '/rss/shuffle' do
 end
 
 get '/rss/:tag/:date' do |tag,date|
-  d = Date.today - date.to_i
-  url = "http://b.hatena.ne.jp/#{user}/rss?date=#{d.strftime("%Y%m%d")}"
+  day = Date.today - date.to_i
+  url = "http://b.hatena.ne.jp/#{user}/rss?date=#{day.strftime("%Y%m%d")}"
   txt = "はてブ棚卸 #{date}日前"
   txt += " タグ:#{tag}" unless tag == "all"
 
