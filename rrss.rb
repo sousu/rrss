@@ -3,7 +3,6 @@
 #
 
 require 'sinatra'
-require 'sinatra/reloader'
 require 'date'
 require 'open-uri'
 require 'rss'
