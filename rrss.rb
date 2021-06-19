@@ -90,7 +90,7 @@ get '/rss/:tag/:date' do |tag,date|
             item.link = i.link
             item.title = i.title
             item.description = i.description
-            item.date = i.date
+            item.date = Time.now
             item.content_encoded = i.content_encoded
             item.dc_subject = i.dc_subject
           end
