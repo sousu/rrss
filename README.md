@@ -14,7 +14,8 @@ RubyではてブRSS再配信して棚卸し
 
 RSSの登録
 
-    http://path/to/sinatra/rss/all/365  1年前の全てのはてブ
-    http://path/to/sinatra/rss/@de/3    3日目のタグ[@de]のはてブ
-    http://path/to/sinatra/shuffle      ランダム取得
+    http://path/to/sinatra/rss/all/365       1年前の全てのはてブ取得
+    http://path/to/sinatra/rss/@de/3         3日目のタグ[@de]のはてブ取得
+    http://path/to/sinatra/rss/all/shuffle   全てからのランダム取得
+    http://path/to/sinatra/rss/tabe/shuffle  タグ[tabe]からのランダム取得
     
