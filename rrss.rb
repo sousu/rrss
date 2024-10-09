@@ -31,7 +31,7 @@ get '/rss/:tag/:date' do |tag,date|
   if date == "shuffle" 
     txt = "はてブ棚卸 shuffle"
     txt += " タグ:#{tag}" unless tag == "all"
-    30.times do 
+    10.times do 
       sleep(0.5)
       ago = (Date.today-Date.parse(start)).to_i - rand(3600) #Todo 古い物を少なく
       day = Date.today - (rand(ago)+1)
@@ -62,7 +62,7 @@ def open(day,title,user,tag)
     rss = RSS::Maker.make("2.0") do |m|
       m.channel.title = title
       m.channel.description = title
-      m.channel.link = "http://b.hatena.ne.jp/#{user}"
+      m.channel.link = "https://b.hatena.ne.jp/#{user}"
       rss.items.each do |i|
         if tag == "all" or tag == i.dc_subject 
           nothing = false
@@ -71,7 +71,7 @@ def open(day,title,user,tag)
             item.title = i.title
             item.description = i.description
             item.date = Time.now
-            item.content_encoded = i.content_encoded
+            item.content_encoded = i.date.to_s+" "+i.content_encoded
             item.dc_subject = i.dc_subject
           end
         end
@@ -84,7 +84,7 @@ end
 
 def empty(m)
   m.items.new_item do |item|
-    item.link = "http://b.hatena.ne.jp/"
+    item.link = "https://b.hatena.ne.jp/"
     item.title = "No entry"
     item.description = "No entry"
   end
