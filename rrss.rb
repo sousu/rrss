@@ -33,7 +33,9 @@ get '/rss/:tag/:date' do |tag,date|
     txt += " タグ:#{tag}" unless tag == "all"
     10.times do 
       sleep(0.5)
-      ago = (Date.today-Date.parse(start)).to_i - rand(3600) #Todo 古い物を少なく
+      # Todo_古いものを少なく
+      # ex MAX 15年 - 10年内ランダム - 2年内ランダム = おおよそ最近
+      ago = (Date.today-Date.parse(start)).to_i - rand(3600) - rand(720)
       day = Date.today - (rand(ago)+1)
       rss = open(day,txt,user,tag)
       return rss if rss
