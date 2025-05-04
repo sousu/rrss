@@ -31,6 +31,7 @@ get '/rss/:tag/:date' do |tag,date|
   if date == "shuffle" 
     txt = "はてブ棚卸 shuffle"
     txt += " タグ:#{tag}" unless tag == "all"
+    puts "--- shuffle ---"
     10.times do 
       sleep(0.5)
       # Todo_古いものを少なく
